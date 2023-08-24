@@ -11,11 +11,11 @@ int (*get_built_in(char *name))(char **, char *)
 	int i = 0;
 
 	built_in_t built_in[] = {
-		{"exit", exit_func},
-		{"env", env_func},
-		{"setenv", setenv_func},
-		{"unset", unset_func},
-		{"cd", _cd},
+		{"exit", _myexit},
+		{"env", _printenv},
+		{"setenv", _mysetenv},
+		{"unsetenv", _myunset},
+		{"cd", _mycd},
 		{NULL, NULL}
 	};
 

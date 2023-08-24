@@ -31,17 +31,21 @@ typedef struct built_in
 /** parsing */
 char **parsing(char *input, char *delimiter);
 
-/** strings */
+/* strings  functions protoypes */
+int _strcmp(const char *str1, const char *str2);
 int _putchar(char c, int buffer);
 void _puts(char *s, int buffer);
-int _strlen(char *s);
-char *_strcpy(char *dest, char *src);
-char *_strdup(char *s);
-int _strncmp(const char *s1, const char *s2, size_t n);
-int _strcmp(const char *s1, const char *s2);
-char *string_concat(char *str1, char *str2, char ch);
-char *_getenv(char *name);
-int strdiff(char *str1, char *str2);
+int _strncmp(const char *str1, const char *str2, size_t n);
+char *_strcpy(char *dest, const char *src);
+char *_strncpy(char *dest, const char *src, size_t n);
+char *_strccat(char *dest, const char *src, char c);
+char *_strcat(char *dest, const char *src);
+char *_strdup(const char *src);
+char *_strchr(const char *s, int c);
+int _atoi(char *s);
+int _strlen(const char *str);
+char *_getenv(const char *name);
+int is_all_digits(char *s);
 
 /** execution */
 void execute(char **, char **, char *, int *);
@@ -49,11 +53,11 @@ char *handle_path(char *cmd);
 int (*get_built_in(char *name))(char **, char *input);
 
 /** built in */
-int env_func(char **, char *);
-int exit_func(char **, char *);
-int setenv_func(char **, char *);
-int unset_func(char **, char *);
-int _cd(char **args, char *);
+int _printenv(char **, char *);
+int _myexit(char **, char *);
+int _mysetenv(char **, char *);
+int _myunset(char **, char *);
+int _mycd(char **args, char *);
 
 /** helpers */
 int handle_builtin(char **tokens, char *input);
@@ -63,10 +67,9 @@ int _setenv(char *name, char *value, int overwrite);
 int _unset(char *name);
 void handler_function(int i);
 /** helpers 2*/
-int _atoi(char *);
 void cd_home(char *);
 void set_old_pwd(char *);
-char *strenv(char *env, char *variable, char *value);
+char *_putenv(char *env, char *name, char *value);
 
 /** _getline*/
 char *insertstring(char **dst, char *str);
