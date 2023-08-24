@@ -39,6 +39,7 @@ int _printenv(char **args, char *input)
 int _mysetenv(char **args, char *input)
 {
 	int args_count = 0;
+	char *buffer;
 
 	(void)input;
 
@@ -47,8 +48,12 @@ int _mysetenv(char **args, char *input)
 		args_count++;
 
 	if (args_count == 3)
+	{
 		_setenv(args[1], args[2], 1);
-	_printenv(args, input);
+		buffer = _getenv(args[1]);
+		_puts(buffer, 1);
+		_putchar('\n', 1);
+	}
 
 	return (0);
 }
