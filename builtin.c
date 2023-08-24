@@ -48,6 +48,7 @@ int _mysetenv(char **args, char *input)
 
 	if (args_count == 3)
 		_setenv(args[1], args[2], 1);
+	_printenv(args, input);
 
 	return (0);
 }
