@@ -63,7 +63,6 @@ int _mysetenv(char **args, char *input)
 int _myunset(char **args, char *input)
 {
 	int args_count = 0;
-	int i = 1;
 
 	(void)input;
 
