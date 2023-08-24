@@ -23,9 +23,9 @@ int _printenv(char **args, char *input)
 	{
 		_puts(*env, 1);
 		_putchar('\n', 1);
-		_putchar('\n', 1);
 		env++;
 	}
+	_putchar('\n', 1);
 
 	return (0);
 }
