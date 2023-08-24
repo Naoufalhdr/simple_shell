@@ -1,91 +1,86 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#define MAX_LENGHT 1024
-
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <string.h>
+#include <stdbool.h>
+#include <signal.h>
 
-#define MAX 100
-#define BUFFER_SIZE 8192
-#define MAX_ALIASES 50
-#define MAX_ALIAS_LENGTH 256
+#define PROMPT "$ "
+#define SHELL_NAME "./hsh"
 
-/**
- * struct Alias - represents an alias in the shell.
- * @name: the name of the alias.
- * @value: the value associated with the alias.
- *
- */
-typedef struct
-{
-	char name[MAX_ALIAS_LENGTH];
-	char value[MAX_ALIAS_LENGTH];
-} Alias;
-
-/**
- * struct shell_data - holds data related to the shell.
- * @aliases: an array of Alias structures representing user-defined aliases.
- * @num_aliases: the number of currently stored aliases in the 'aliases' array.
- *
- */
-typedef struct shell_data
-{
-	Alias aliases[MAX_ALIASES];
-	int num_aliases;
-} shell_data_t;
-
+static int err_count __attribute__((unused));
 extern char **environ;
-Alias aliases[MAX_ALIASES];
 
-/* funtions prototypes */
-char *found_command(char *command);
-size_t _read_input(void);
-ssize_t _getline(char **lineptr, size_t *n);
+/**
+ * struct built_in - built_in struct
+ * @name: built in function name
+ * @func: function associated
+ */
+typedef struct built_in
+{
+	char *name;
+	int (*func)(char **, char *);
+} built_in_t;
+
+/** parsing */
+char **parsing(char *input, char *delimiter);
+
+/** strings */
+int _putchar(char c, int buffer);
+void _puts(char *s, int buffer);
+int _strlen(char *s);
+char *_strcpy(char *dest, char *src);
+char *_strdup(char *s);
+int _strncmp(const char *s1, const char *s2, size_t n);
+int _strcmp(const char *s1, const char *s2);
+char *string_concat(char *str1, char *str2, char ch);
+char *_getenv(char *name);
+int strdiff(char *str1, char *str2);
+
+/** execution */
+void execute(char **, char **, char *, int *);
+char *handle_path(char *cmd);
+int (*get_built_in(char *name))(char **, char *input);
+
+/** built in */
+int env_func(char **, char *);
+int exit_func(char **, char *);
+int setenv_func(char **, char *);
+int unset_func(char **, char *);
+int _cd(char **args, char *);
+
+/** helpers */
+int handle_builtin(char **tokens, char *input);
+void free_tokens(char **tokens);
+int check_blank(char *);
+int _setenv(char *name, char *value, int overwrite);
+int _unset(char *name);
+void handler_function(int i);
+/** helpers 2*/
+int _atoi(char *);
+void cd_home(char *);
+void set_old_pwd(char *);
+char *strenv(char *env, char *variable, char *value);
+
+/** _getline*/
+char *insertstring(char **dst, char *str);
+int check(char **buff, int n);
+ssize_t _getline(char **line, size_t *n, FILE *fp);
+
+void print_int(int n);
+void print_error(char *shell_name, int errno, char *cmd);
+
+/** _strtok */
+
+char *_strtok(char *str, char *delim);
+char *get_next(char *str, char *delim);
+int char_in_delim(char c, char *delim);
 
 
-/* string functions prototypes */
-char *_strdup(const char *src);
-char *_strchr(const char *s, int c);
-size_t _strlen(const char *str);
-int _strcmp(const char *str1, const char *str2);
-int _strncmp(const char *str1, const char *str2, size_t n);
-char *_strcpy(char *dest, const char *src);
-char *_strncpy(char *dest, const char *src, size_t n);
-char *_strcat(char *dest, const char *src);
-int _atoi(char *s);
-int is_all_digits(char *s);
-
-/* memory functions protoypes */
-void *_memcpy(void *dest, const void *src, size_t n);
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
-
-/* environment functions prototypes */
-char *_getenv(const char *name);
-int _setenv(const char *name, const char *value, int overwrite);
-int _unsetenv(const char *name);
-void _printenv(void);
-
-/* built-in functions */
-void _myexit(char *input);
-void _mycd(char *line);
-void _mysetenv(char *line);
-void _myunsetenv(char *line);
-int builtint_command(char *line, shell_data_t *data);
-
-/* alias functions */
-char *extract_alias(char *current, char *name, char *value);
-void display_all_aliases(shell_data_t *data);
-void set_alias(char *name, char *value, shell_data_t *data);
-void _myalias(char *line, shell_data_t *data);
-char *replace_alias_with_command(char *cmd, shell_data_t *data);
-
-
-
-#endif /* SHELL_H  */
-
+#endif

@@ -1,74 +1,134 @@
 #include "shell.h"
 
-static char buffer[BUFFER_SIZE];
-static size_t buffer_index;
-static size_t buffer_size;
+/*
+*Important notice : the buffer used for _getline argument
+*must be initialized to NULL or allocated, otherwise it will give an error
+*/
 
 /**
- * _read_input - reads input from standard input into the buffer.
- *
- * Return: the number of bytes read, or -1 if an error occurs.
- */
-size_t _read_input(void)
-{
-	if (buffer_index >= buffer_size)
-	{
-		buffer_size = read(STDIN_FILENO, buffer, BUFFER_SIZE);
-		if (buffer_size <= 0)
-			return (buffer_size);
-		buffer_index = 0;
-	}
+ * insertstring - concat dst and str
+ * @dst: destination
+ * @str: string to add
+ * Return: allocated memory to new dst
+*/
 
-	return (buffer_size);
+char *insertstring(char **dst, char *str)
+{
+	if (*dst == NULL && str == NULL)
+		return (NULL);
+	if (*dst == NULL)
+	{
+		int i = 0;
+		*dst = malloc(_strlen(str));
+		while (str[i] != 0)
+		{
+			(*dst)[i] = str[i];
+			i++;
+		}
+		return (*dst);
+	}
+	else
+	{
+		int i = 0, j = 0;
+		int ln, lif;
+		char *dstcopy = *dst;
+
+		ln = _strlen(*dst);
+		lif = _strlen(str);
+		*dst = malloc(ln + lif - 1);
+
+		while (j < ln)
+		{
+			(*dst)[j] = dstcopy[j];
+			j++;
+		}
+		while (i <= lif)
+		{
+			(*dst)[ln + i] = str[i];
+			i++;
+		}
+			free(dstcopy);
+
+		return (*dst);
+	}
 }
 
 /**
- * _getline - reads a line from standard input and stores it in 'lineptr'.
- * @lineptr: a pointer to the buffer to store the line.
- * @n: a pointer to the size of the buffer.
- *
- * Return: the number of characters read, or -1 if an error occurs.
- */
-ssize_t _getline(char **lineptr, size_t *n)
+ * check - check if buff contain \n
+ * @buff: the string
+ * @n: number of characters read in (read)
+ * Return: 0 if it doesnt 1 if it does
+*/
+int check(char **buff, int n)
 {
-	size_t pos = 0, bytes_read;
+	int i = 0, j = 0;
+	int kn = 0;
+	char *new, *copybuff;
 
-	if (lineptr == NULL || n == NULL)
-		return (-1);
-	while (1)
+	while ((*buff)[i] != '\0')
 	{
-		if (buffer_index >= buffer_size)
+		if ((*buff)[i] == '\n')
 		{
-			bytes_read = _read_input();
-			if (bytes_read <= 0)
-			{
-				if (pos == 0)
-					return (-1);
-				break;
-			}
-		}
-		if (buffer[buffer_index] == '\n')
-		{
-			if (*lineptr == NULL || *n < pos + 2)
-			{
-				*n = pos + 2;
-				*lineptr = _realloc(*lineptr, pos, *n);
-				if (*lineptr == NULL)
-					return (-1);
-			}
-			(*lineptr)[pos++] = '\n';
-			(*lineptr)[pos] = '\0';
-			buffer_index++;
+			kn = 1;
 			break;
 		}
-		if (*lineptr == NULL || *n < pos + 1)
-		{
-			*n = pos + 1;
-			*lineptr = _realloc(*lineptr, pos, *n);
-			if (*lineptr == NULL)
-				return (-1);
-		}
-		(*lineptr)[pos++] = buffer[buffer_index++];
+		i++;
 	}
-	return ((ssize_t)pos);
+	if (kn == 1)
+	{
+		new = malloc(i + 2);
+		copybuff = *buff;
+		if (i != 0)
+		{
+			while (j <= i)
+			{
+				new[j] = copybuff[j];
+				j++;
+			}
+		}
+		else
+			new[i] = '\n';
+		new[i + 1] = '\0';
+		*buff = new;
+		free(copybuff);
+	}
+	if (kn == 0 && n < 1024)
+		kn = 1;
+	return (kn);
+}
+
+
+/**
+ * _getline - prototype of getline
+ * @line: the buffer to store the new line
+ * @n: the number of char read
+ * @fp: FILE structur
+ * Return: the number of charcters read
+*/
+ssize_t _getline(char **line, size_t *n, FILE *fp)
+{
+	char *buff, *copyline;
+	int i, rd;
+	int fd = fp->_fileno;
+
+	copyline = malloc(1024);
+	rd = read(fd, copyline, 1023);
+	if (rd == -1)
+		return (-1);
+	if (rd == 0)
+		return (EOF);
+	copyline[rd] = '\0';
+	i = check(&copyline, rd);
+	while (i == 0)
+	{
+		buff = malloc(1024);
+		rd = read(fd, buff, 1023);
+		buff[rd] = 0;
+		copyline = insertstring(&copyline, buff);
+		i = check(&copyline, rd);
+		free(buff);
+	}
+	*line = copyline;
+	*n = _strlen(*line);
+	return (*n);
 }
