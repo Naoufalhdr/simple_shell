@@ -55,10 +55,37 @@ int _setenv(char *name, char *value, int overwrite)
 }
 
 /**
+ * _unsetenv - removes an environment variable.
+ * @name: thhe name of  the environment variable to unset.
+ *
+ * Return: 0 on success, -1 on failure.
+ */
+int _unset(char *name)
+{
+	char **env;
+	size_t name_len;
+	int new_env_size;
+
+	if (name == NULL)
+		return (-1);
+
+	new_env_size = 0;
+	name_len = _strlen(name);
+	for (env = environ; *env != NULL; env++)
+	{
+		if (_strncmp(*env, name, name_len) != 0 || (*env)[name_len] != '=')
+			environ[new_env_size++] = *env;
+	}
+	environ[new_env_size] = NULL;
+
+	return (0);
+}
+
+/*
  * _unset - Remove a specified environment variable.
  * @name: The name of the environment variable to be removed.
  * Return: Always returns 0.
- */
+ *
 int _unset(char *name)
 {
 	int i = 0, tst = 0;
@@ -80,6 +107,7 @@ int _unset(char *name)
 	}
 	return (0);
 }
+*/
 
 #include <string.h>
 
