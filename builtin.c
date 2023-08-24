@@ -25,7 +25,6 @@ int _printenv(char **args, char *input)
 		_putchar('\n', 1);
 		env++;
 	}
-	_putchar('\n', 1);
 
 	return (0);
 }
@@ -73,6 +72,7 @@ int _myunset(char **args, char *input)
 
 	if (args_count == 2)
 		_unset(args[1]);
+	_printenv(args, input);
 
 	return (0);
 }
