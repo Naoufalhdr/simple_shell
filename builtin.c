@@ -46,14 +46,9 @@ int _mysetenv(char **args, char *input)
 	while (args[args_count])
 		args_count++;
 
-	if (args_count < 3 || args_count > 3)
-	{
-		_puts("Incorrect number of arguments.", 1);
-		_putchar('\n', 1);
-	}
-		
 	if (args_count == 3)
 		_setenv(args[1], args[2], 1);
+	_printenv(args, input);
 
 	return (0);
 }
@@ -76,19 +71,9 @@ int _myunset(char **args, char *input)
 	while (args[args_count])
 		args_count++;
 
-	if (args_count < 2)
-	{
-		_puts("too few arguments.", 1);
-		_putchar('\n', 1);
-	}
-	else
-	{
-		while (i < args_count)
-		{
-			_unset(args[i]);
-			i++;
-		}
-	}
+	if (args_count == 2)
+		_unset(args[1]);
+	_printenv(args, input);
 
 	return (0);
 }
