@@ -1,7 +1,7 @@
 #include "shell.h"
 
-#define MAX_COUNT 50
-#define MAX_SIZE 1600
+#define MAX_COUNT 100
+#define MAX_SIZE 2000
 
 /**
  * _setenv - establish or modify an environment variable.
@@ -14,9 +14,11 @@ int _setenv(char *name, char *value, int overwrite)
 {
 	int idx = 0, found = 0, j, env_len;
 	char *env[MAX_COUNT];
-	char env_v[MAX_SIZE], env_g[MAX_SIZE], eng[MAX_COUNT][MAX_SIZE];
+	char env_v[MAX_SIZE], env_g[MAX_SIZE];
+	char eng[MAX_COUNT][MAX_SIZE];
 	int name_len = _strlen(name);
 
+	/* Search the environment variable */
 	while (environ[idx])
 	{
 		if (_strncmp(name, environ[idx], name_len) == 0
@@ -31,13 +33,11 @@ int _setenv(char *name, char *value, int overwrite)
 	{
 		if (overwrite == 1)
 		{
-			for (j = 0; environ[j]; j++)
-				env[j] = _strcpy(eng[j], environ[j]);
 			env[idx] = _putenv(env_g, name, value);
 		}
 		else
 			return (0);
-		environ = env;
+		environ[idx] = env[idx];
 		return (0);
 	}
 	else
@@ -94,30 +94,16 @@ int _unset(char *name)
  */
 char *_putenv(char *env, char *name, char *value)
 {
-	char *n, *v;
-
 	if (!name || !env)
 		return (NULL);
 
-	n = malloc(sizeof(char) * _strlen(name));
-	if (n == NULL)
-		return (NULL);
-	_strcpy(n, name);
-
-	v = malloc(sizeof(char) * _strlen(value));
-	if (v == NULL)
-		return (NULL);
-	_strcpy(v, value);
-
 	/* Copy name to env */
-	_strcpy(env, n);
+	_strcpy(env, name);
 	/* Append '=' to env */
 	_strcat(env, "=");
 	/* Append value to env */
-	_strcat(env, v);
+	_strcat(env, value);
 
-	free(n);
-	free(v);
 	return (env);
 }
 
@@ -144,3 +130,4 @@ char *_getenv(const char *name)
 
 	return (NULL);
 }
+

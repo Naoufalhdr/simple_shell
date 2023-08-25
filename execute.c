@@ -41,7 +41,9 @@ int handle_builtin(char **tokens, char *input)
 
 	func = get_built_in(tokens[0]);
 	if (func)
+	{
 		return (func(tokens, input));
+	}
 	return (-1);
 }
 
@@ -60,6 +62,7 @@ void execute(char **tokens, char *argv[], char *input, int *status)
 	int st_helper;
 
 	st_helper = handle_builtin(tokens, input);
+
 	if (st_helper == -1)
 	{
 		path = handle_path(cmd);
