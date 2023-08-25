@@ -10,6 +10,7 @@
 int _printenv(char **args, char *input)
 {
 	char **env;
+	int i = 1;
 
 	(void)input;
 	(void)args;
@@ -24,6 +25,7 @@ int _printenv(char **args, char *input)
 		_puts(*env, 1);
 		_putchar('\n', 1);
 		env++;
+		i++;
 	}
 
 	return (0);
@@ -39,7 +41,6 @@ int _printenv(char **args, char *input)
 int _mysetenv(char **args, char *input)
 {
 	int args_count = 0;
-
 	(void)input;
 
 	/* Count the number of args */
@@ -48,7 +49,6 @@ int _mysetenv(char **args, char *input)
 
 	if (args_count == 3)
 		_setenv(args[1], args[2], 1);
-	_printenv(args, input);
 
 	return (0);
 }
