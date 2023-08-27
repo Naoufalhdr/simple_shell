@@ -54,7 +54,7 @@ int _setenv(char *name, char *value, int overwrite)
 	return (-1);
 }
 
-/*
+/**
  * _unset - Remove a specified environment variable.
  * @name: The name of the environment variable to be removed.
  *
