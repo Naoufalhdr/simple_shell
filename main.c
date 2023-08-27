@@ -1,64 +1,51 @@
 #include "shell.h"
-
-int main(void)
+/**
+ * main - Entry point
+ * Return: 0
+ * @argc: argc
+ * @argv: argv
+ */
+int main(int argc __attribute__((unused)), char *argv[])
 {
-	char **tokens, *full_path, *input = NULL;
-	size_t len = 0;
-	ssize_t nread;
-	int is_found, status;
-	pid_t pid;
+	char **tokens, *input = NULL;
+	size_t n = 0;
+	ssize_t n_chars;
+	bool run = true;
+	int status = 0;
 
-	/* Set up the signal handler to ignore SIGINT directly */
-	signal(SIGINT, sigint_handler);
-	while (1)
+	while (run)
 	{
-	/*### READ INPUT ###*/
-		_puts("$ ");
-		nread = getline(&input, &len, stdin);
-		if (nread == -1)
-		{
-			_puts("\n");
-			break;
-		}
-		if (input[nread - 1] == '\n')
-			input[nread - 1] = '\0';
-	/*### HANDLE EXIT BUILT-IN ###*/
-		if (_strncmp(input, "exit", 4) == 0)
-			break;
-	/*### HANDLE ENV BUILT-IN  ###*/
-		if (_strncmp(input, "env", 4) == 0)
-		{
-			_printenv();
-			continue;
-		}
-	/*### TOKENIZE INPUT ###*/
-		tokens = tokenize_input(input);
-		if (tokens == NULL)
-			continue;
-	/*### CHECK IF COMMAND FOUND IN PATH ###*/
-		is_found = command_found(tokens[0], &full_path);
-		if (is_found == 0)
-		{
-			_puts("command not found\n");
-			free_tokens(tokens);
-			continue;
-		}
-		free(tokens[0]);
-		tokens[0] = _strdup(full_path);
-		free(full_path);
-	/*### EXECUTE COMMAND ###*/
-		pid = fork();
-		if (pid == -1)
-			perror("fork");
-		if (pid == 0)
-		{
-			if (execve(tokens[0], tokens, NULL) == -1)
-				perror("execve");
-		}
+		if (isatty(STDIN_FILENO))
+			_puts(PROMPT, 1);
 		else
-			wait(&status);
+			run = false;
+		signal(SIGINT, handler_function);
+		n_chars = getline(&input, &n, stdin);
+
+		if (n_chars == EOF)
+		{
+			_puts("\nExiting...\n", 1);
+			free(input);
+			exit(status);
+		}
+		if ((n_chars == 1 && input[0] == '\n') || check_blank(input) == 0)
+			continue;
+		tokens = parsing(input, " \t\"\'\n");
+		if (!tokens)
+		{
+			perror("parsing failed");
+			return (2);
+		}
+		execute(tokens, argv, input, &status);
 		free_tokens(tokens);
+		if (input)
+		{
+			free(input);
+			input = NULL;
+		}
+		n = 0;
 	}
 	free(input);
-	return (0);
+	return (status);
 }
+
